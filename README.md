@@ -1,66 +1,92 @@
-## Foundry
+# Decentralized Stablecoin (DSC) Engine
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+## Overview
+This repository contains smart contracts for a decentralized stablecoin (DSC) system built on Ethereum. The DSC protocol allows users to deposit collateral (WETH, WBTC) and mint a stablecoin pegged to the USD. The system ensures over-collateralization, automatic liquidations, and price stability using Chainlink oracles.
 
-Foundry consists of:
+### Features
+- **Collateralized Stablecoin:** Users mint DSC by depositing over-collateralized assets.
+- **Liquidation Mechanism:** Unhealthy positions can be liquidated to maintain solvency.
+- **Chainlink Price Feeds:** Reliable asset pricing using Chainlink oracles.
+- **ERC20 Standard:** DSC is implemented as an ERC20 token using OpenZeppelin contracts.
+- **Oracle Library (`OracleLib`)**: Prevents using stale price feed data.
+- **Tests & Fuzzing:** Comprehensive testing with Foundry, including fuzz testing.
+- **Deployment Scripts:** Automated deployment using Foundry scripts.
 
--   **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
--   **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
--   **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
--   **Chisel**: Fast, utilitarian, and verbose solidity REPL.
+## Installation
 
-## Documentation
+### Prerequisites
+Ensure you have the following installed:
+- [Foundry](https://book.getfoundry.sh/getting-started/installation) (for testing and deployment)
+- [Node.js & npm](https://nodejs.org/) (for additional package management if needed)
+- [Git](https://git-scm.com/) (for version control)
 
-https://book.getfoundry.sh/
+### Setup
+
+1. **Clone the repository**:
+   ```sh
+   git clone https://github.com/yourusername/dsc-engine.git
+   cd dsc-engine
+   ```
+
+2. **Install Foundry**:
+   ```sh
+   curl -L https://foundry.paradigm.xyz | bash
+   foundryup
+   ```
+
+3. **Install Dependencies**:
+   ```sh
+   forge install openzeppelin/contracts@latest
+   forge install smartcontractkit/chainlink-brownie-contracts@latest
+   ```
 
 ## Usage
 
-### Build
-
-```shell
-$ forge build
+### Running Tests
+To run all tests, including unit tests and fuzzing:
+```sh
+forge test
 ```
 
-### Test
-
-```shell
-$ forge test
+For verbose output:
+```sh
+forge test -vvv
 ```
 
-### Format
+### Deploying Contracts
+You can deploy the contracts using Foundry scripts:
+```sh
+forge script script/DeployDSCEngine.s.sol --fork-url <RPC_URL> --broadcast
+```
+Replace `<RPC_URL>` with your Ethereum node provider (e.g., Alchemy, Infura).
 
-```shell
-$ forge fmt
+### Fuzz Testing
+Fuzz tests ensure stability against unexpected inputs. Run fuzz tests with:
+```sh
+forge test --fuzz-runs 500
 ```
 
-### Gas Snapshots
+## Smart Contracts Overview
 
-```shell
-$ forge snapshot
-```
+### **DSC Engine (`DSCEngine.sol`)**
+The core contract responsible for managing deposits, minting, redemptions, and liquidations.
 
-### Anvil
+- `depositCollateral()` - Deposits WETH/WBTC as collateral.
+- `mintDSC()` - Mints DSC against collateral.
+- `redeemCollateral()` - Withdraws collateral (if healthy).
+- `liquidate()` - Liquidates undercollateralized positions.
+- `_healthFactor()` - Computes if an account can be liquidated.
 
-```shell
-$ anvil
-```
+### **DSC Token (`DSC.sol`)**
+- Implements the ERC20 standard using OpenZeppelin.
+- Used as the stablecoin minted in the system.
 
-### Deploy
+### **Oracle Library (`OracleLib.sol`)**
+- Prevents stale Chainlink oracle price data from being used.
+- Ensures reliable pricing before minting or liquidating.
 
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
-```
+## Contributing
+Feel free to fork this repository, submit issues, and open pull requests!
 
-### Cast
-
-```shell
-$ cast <subcommand>
-```
-
-### Help
-
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
-```
+## License
+This project is licensed under the MIT License.
